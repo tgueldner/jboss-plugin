@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.398</version>
+		<version>1.645</version>
 	</parent>
 
 	<artifactId>jboss</artifactId>
-	<version>1.0.6-SNAPSHOT</version>
+	<version>1.0.5-JBOSS6</version>
 	<packaging>hpi</packaging>
 	
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/JBoss+Management+Plugin</url>
@@ -26,18 +26,20 @@
 
 	<properties>
 		<jboss.version>4.2.2.GA</jboss.version>
+		<!-- <jboss.version>6.1.0-Final</jboss.version> -->
 	</properties>
 
 	<dependencies>
 		<dependency>
-		    <groupId>jboss</groupId>
-		    <artifactId>jboss-logging-jdk</artifactId>
-			<version>2.0.3.GA</version>
-		</dependency>
+		        <groupId>org.jboss.jbossas</groupId>
+		        <artifactId>jboss-as-system-jmx</artifactId>
+		        <version>6.0.0.Final</version>
+		</dependency>  
 		<dependency>
-		    <groupId>org.jboss.client</groupId>
-		    <artifactId>jbossall-client</artifactId>
-			<version>${jboss.version}</version>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.10.19</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -51,6 +53,32 @@
 					<disabledTestInjection>true</disabledTestInjection>
 				</configuration>
 			</plugin>
+			<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>build-helper-maven-plugin</artifactId>
+		        <executions>
+		          <execution>
+		            <id>add-test-source</id>
+		            <phase>generate-test-sources</phase>
+		            <goals>
+		              <goal>add-test-source</goal>
+		            </goals>
+		            <configuration>
+		              <sources>
+		                <source>src/itest/java</source>
+		              </sources>
+		            </configuration>
+		          </execution>
+		        </executions>
+		      </plugin>
+		      <plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*ITest.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -61,7 +89,15 @@
 		</repository>
 		<repository>
 			<id>jboss</id>
-			<url>http://repository.jboss.org/maven2/</url>
+			<url>https://repository.jboss.org</url>
+		</repository>
+		<repository>
+			<id>jboss-releases</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>repo1</id>
+			<url>http://repo1.maven.org/maven2</url>
 		</repository>
 	</repositories>
 
@@ -71,10 +107,17 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	
+	<distributionManagement>
+		<repository>
+			<id>prj-ewai-extras</id>
+			<url>https://artifacts.mms-at-work.de/artifactory/prj-ewai-extras</url>
+		</repository>
+	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:git://github.com/jenkinsci/jboss-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:jenkinsci/jboss-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/jboss-plugin</url>
+		<connection>scm:git:git://github.com/tgueldner/jboss-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:tgueldner/jboss-plugin.git</developerConnection>
+		<url>https://github.com/tgueldner/jboss-plugin</url>
 	</scm>
 </project>

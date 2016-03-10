@@ -3,8 +3,8 @@ package hudson.plugins.jboss;
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.AbstractBuild;
 import hudson.plugins.jboss.JBossBuilder.ServerBean;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.VariableResolver;
@@ -121,7 +121,8 @@ public class CommandsUtils {
         args.add(stopCommand);
         
         if(kindOfServer == 0){//local case
-	        String jndiUrl = "jnp://"+server.getAddress()+":" + server.getJndiPort(); //jnp://127.0.0.1:1099
+        	// new in Jboss 6: -s service:jmx:rmi:///jndi/rmi://127.0.0.1:1090/jmxrmi 
+	        String jndiUrl = "service:jmx:rmi:///jndi/rmi://"+server.getAddress()+":" + (server.getJndiPort()-9) + "/jmxrmi";
 	        args.add("-s", jndiUrl, "-S");
         }
         
@@ -131,21 +132,21 @@ public class CommandsUtils {
         
         try {
         	if(kindOfServer == 1){//remote case
-	        	launcher.launch()
+        		int exitcode = launcher.launch()
 	    				.stderr(listener.getLogger())
 	    				.stdout(new NullOutputStream())
 	    				.cmds(args)
 	    				.join();
-	            return true;
+	            return exitcode==0;
         	}
         	else{
-        		launcher.launch()
+        		int exitcode = launcher.launch()
 						.stderr(listener.getLogger())
 						.stdout(new NullOutputStream())
 						.cmds(args)
 		       			.pwd(server.getHomeDir() + "/bin")
 						.join();
-        		return true;
+        		return exitcode==0;
         	}
         } catch (Exception e) {
         	if (e instanceof IOException) {
